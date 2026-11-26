@@ -7,7 +7,7 @@ package tech.sourceid.sdk.liveness.data
 enum class LivenessEnvironment(internal val baseUrl: String) {
     PRODUCTION("https://core-api.sourceid.tech/v1/api/liveness"),
     SANDBOX("https://core-api.sbx.sourceid.tech/v1/api/liveness"),
-    DEVELOPMENT("https://api-rd.tailfaed50.ts.net/v1/api/liveness");
+    DEVELOPMENT("https://core-api-rd.tailfaed50.ts.net/v1/api/liveness");
 
     companion object {
         /** Case-insensitive lookup, e.g. "production", "SANDBOX". */

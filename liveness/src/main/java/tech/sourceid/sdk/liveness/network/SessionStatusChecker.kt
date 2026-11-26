@@ -47,6 +47,8 @@ internal object SessionStatusChecker {
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
+                // Same as the SourceID web SDK: the gateway records the check under the SDK verification channel.
+                setRequestProperty("X-Verification-Channel", "SDK")
             }
             connection.outputStream.use {
                 it.write(JSONObject().put("reference", sessionId).toString().toByteArray())
@@ -94,6 +96,8 @@ internal object SessionStatusChecker {
                 doOutput = true
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
+                // Same as the SourceID web SDK: the gateway records the check under the SDK verification channel.
+                setRequestProperty("X-Verification-Channel", "SDK")
             }
             connection.outputStream.use {
                 it.write(JSONObject().put("reference", sessionId).toString().toByteArray())
