@@ -1,5 +1,6 @@
 package tech.sourceid.sdk.liveness.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -13,10 +14,14 @@ import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import tech.sourceid.sdk.liveness.data.LivenessError
 import tech.sourceid.sdk.liveness.data.LivenessUIConfig
 import tech.sourceid.sdk.liveness.ui.theme.SDKTestersTheme
+import tech.sourceid.sdk.liveness.ui.theme.backgroundColor
 
 class LivenessActivity : ComponentActivity() {
 
     companion object {
+        /** Intent extra carrying the whole [LivenessUIConfig] (Serializable). */
+        const val EXTRA_CONFIG = "tech.sourceid.sdk.liveness.CONFIG"
+
         // Amplify may only be configured once per process; this also covers
         // host apps that configure Amplify themselves before launching the flow.
         @Volatile
@@ -55,16 +60,14 @@ class LivenessActivity : ComponentActivity() {
 
         val sessionId = intent.getStringExtra("sessionId") ?: ""
         val region = intent.getStringExtra("region") ?: ""
-        val config = LivenessUIConfig(
-            hideBranding = intent.getBooleanExtra("hideBranding", false),
-            customTitle = intent.getStringExtra("customTitle"),
-            theme = intent.getStringExtra("theme") ?: "light",
-            primaryColorHex = intent.getStringExtra("primaryColorHex") ?: "#000000"
-        )
+        val config = readConfig()
 
         setContent {
             SDKTestersTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = config.backgroundColor
+                ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         FaceLivenessScreen(
                             sessionId = sessionId,
@@ -85,6 +88,22 @@ class LivenessActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /** The config passed by [LivenessSDK.launch], or one rebuilt from the pre-1.9 per-field extras. */
+    private fun readConfig(): LivenessUIConfig {
+        val passed = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(EXTRA_CONFIG, LivenessUIConfig::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getSerializableExtra(EXTRA_CONFIG) as? LivenessUIConfig
+        }
+        return passed ?: LivenessUIConfig(
+            hideBranding = intent.getBooleanExtra("hideBranding", false),
+            customTitle = intent.getStringExtra("customTitle"),
+            theme = intent.getStringExtra("theme") ?: "light",
+            primaryColorHex = intent.getStringExtra("primaryColorHex")
+        )
     }
 
     override fun onDestroy() {

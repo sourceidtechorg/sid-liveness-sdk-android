@@ -30,28 +30,33 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import tech.sourceid.liveness.R
 import tech.sourceid.sdk.liveness.data.LivenessUIConfig
+import tech.sourceid.sdk.liveness.ui.theme.cardColor
+import tech.sourceid.sdk.liveness.ui.theme.textColor
 
+/** Start-page guidelines; a host string resource with the same name replaces or translates each one. */
 private val GUIDELINES = listOf(
-    "Use a well-lit space with even lighting, avoid very dark or overly bright areas.",
-    "Keep your head centered and follow prompts.",
-    "Remove any head coverings which may be obstructing your face.",
-    "After 5 fails, apply a 30-60 minute timeout.",
-    "When you're ready, tap Start."
+    R.string.sid_liveness_start_guideline_light,
+    R.string.sid_liveness_start_guideline_center,
+    R.string.sid_liveness_start_guideline_coverings,
+    R.string.sid_liveness_start_guideline_photosensitivity,
+    R.string.sid_liveness_start_guideline_retries,
+    R.string.sid_liveness_start_guideline_ready
 )
 
 /**
  * Instruction page shown before the capture flow starts, mirroring the
- * SourceID web liveness start page.
+ * SourceID web liveness start page. Hidden with `showStartPage = false`.
  */
 @Composable
 internal fun LivenessStartScreen(
     config: LivenessUIConfig,
     onStart: () -> Unit
 ) {
-    val isDark = config.theme == "dark"
-    val textColor = if (isDark) Color.White else Color(0xFF111111)
-    val cardBackground = if (isDark) Color.White.copy(alpha = 0.08f) else Color(0xFFF5F3FA)
+    val textColor = config.textColor
+    val cardBackground = config.cardColor
     val primary = MaterialTheme.colorScheme.primary
 
     Column(
@@ -63,7 +68,7 @@ internal fun LivenessStartScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = config.customTitle ?: "Liveness Check",
+            text = config.customTitle ?: stringResource(R.string.sid_liveness_start_title),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = textColor,
@@ -73,7 +78,7 @@ internal fun LivenessStartScreen(
         Spacer(modifier = Modifier.height(48.dp))
 
         Text(
-            text = "We need to verify you are a real person for security purposes.",
+            text = stringResource(R.string.sid_liveness_start_intro),
             style = MaterialTheme.typography.bodyLarge,
             color = textColor,
             textAlign = TextAlign.Center
@@ -93,15 +98,14 @@ internal fun LivenessStartScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Your face needs to be verified against your information. " +
-                    "Please follow the guidelines below to ensure proper capture:",
+                text = stringResource(R.string.sid_liveness_start_guidelines_intro),
                 style = MaterialTheme.typography.bodyMedium,
                 color = textColor
             )
             Spacer(modifier = Modifier.height(12.dp))
             GUIDELINES.forEach { line ->
                 Text(
-                    text = "- $line",
+                    text = "- ${stringResource(line)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = textColor,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -119,7 +123,11 @@ internal fun LivenessStartScreen(
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = primary)
         ) {
-            Text(text = "Start Liveness Check", color = Color.White)
+            Text(
+                text = stringResource(R.string.sid_liveness_start_button),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }

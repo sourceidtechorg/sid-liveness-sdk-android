@@ -31,10 +31,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"  // Add this for Kotlin 1.9.24
-    }
-
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -65,7 +61,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.sourceidtechorg"
                 artifactId = "sid-liveness-sdk-android"
-                version = "1.8.1"
+                version = "1.9.0"
 
                 pom {
                     name.set("SIDLiveness")
@@ -111,15 +107,15 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    // Icons.Filled.Person on the start page. Material 3 1.4+ no longer brings this in.
+    implementation("androidx.compose.material:material-icons-core")
 
-    // FaceLivenessDetector dependency
-    implementation("com.amplifyframework.ui:liveness:1.6.0")
+    // AWS Amplify Face Liveness UI. 1.13.0 requires Amplify 2.42.0 (aws-predictions);
+    // keep aws-auth-cognito on the same Amplify version.
+    implementation("com.amplifyframework.ui:liveness:1.13.0")
 
     // Amplify Auth dependency
-    implementation("com.amplifyframework:aws-auth-cognito:2.29.2")
-
-    // Material3 dependency for theming FaceLivenessDetector
-    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("com.amplifyframework:aws-auth-cognito:2.42.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

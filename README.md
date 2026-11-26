@@ -35,7 +35,7 @@ dependencyResolutionManagement {
 
 ```kotlin
 dependencies {
-    implementation("com.github.sourceidtechorg:sid-liveness-sdk-android:v1.8.0")
+    implementation("com.github.sourceidtechorg:sid-liveness-sdk-android:v1.9.0")
 }
 ```
 
@@ -169,14 +169,42 @@ onError = { error ->
 
 ## UI customization
 
-`LivenessUIConfig`:
+`LivenessUIConfig` has the same fields, defaults and behaviour as the iOS SDK; [CONTRACT.md](CONTRACT.md) is the shared reference.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `hideBranding` | `Boolean` | `false` | Hide the "Powered by SourceID" footer |
-| `customTitle` | `String?` | `null` | Title shown above the camera view (omitted when `null`) |
-| `theme` | `String` | `"light"` | `"light"` or `"dark"` |
-| `primaryColorHex` | `String?` | `null` | Accent color, e.g. `"#0A84FF"` (falls back to theme default when null/invalid) |
+| `customTitle` | `String?` | `null` | Title above the camera and on the start page (omitted above the camera when `null`) |
+| `theme` | `String` | `"light"` | `"light"` or `"dark"`: the base palette every colour falls back to |
+| `primaryColorHex` | `String?` | `null` | Shorthand for `colors.primary` |
+| `showStartPage` | `Boolean` | `true` | Show the SourceID instruction page before the camera. Set `false` when your app has its own intro, and include a photosensitivity notice there: the check flashes colours on screen |
+| `hideCancelButton` | `Boolean` | `false` | Hide AWS's close button during capture. Only when your app offers another way out |
+| `colors` | `LivenessColors` | all `null` | `primary`, `onPrimary`, `background`, `onBackground`, `surface`, `error`, `onError`, `errorContainer`, `onErrorContainer`, each `"#RRGGBB"` |
+| `fonts` | `LivenessFonts` | all `null` | `regular`, `medium`, `bold`: file names (no extension) of fonts in your app's `assets/fonts/`, or `res/font` resource names |
+
+Colours and fonts style the SourceID screens and the AWS detector together (through the Material theme the detector reads). They cannot change the oval outline, the white overlay around the oval during the check, the oval geometry or the flashing colours; those are fixed by AWS.
+
+```kotlin
+val config = LivenessUIConfig(
+    hideBranding = true,
+    theme = "dark",
+    showStartPage = false,
+    colors = LivenessColors(
+        primary = "#AA2236",
+        onPrimary = "#FFFFFF",
+        background = "#0C1F1A",
+        onBackground = "#FFFFFF"
+    ),
+    fonts = LivenessFonts(regular = "Exo2-Regular", medium = "Exo2-Medium", bold = "Exo2-Bold")
+)
+```
+
+### Text and translations
+
+Every visible string can be replaced or translated without code: declare the same string names in your app's `res/values/strings.xml` (or `res/values-ar/strings.xml` for Arabic). App resources take precedence over the SDK's.
+
+- AWS detector text uses names starting `amplify_ui_liveness_`, for example `amplify_ui_liveness_challenge_instruction_move_face_closer`.
+- SourceID text uses names starting `sid_liveness_`: `sid_liveness_start_title`, `sid_liveness_start_intro`, `sid_liveness_start_guidelines_intro`, `sid_liveness_start_guideline_light`, `sid_liveness_start_guideline_center`, `sid_liveness_start_guideline_coverings`, `sid_liveness_start_guideline_photosensitivity`, `sid_liveness_start_guideline_retries`, `sid_liveness_start_guideline_ready`, `sid_liveness_start_button`, `sid_liveness_powered_by`, `sid_liveness_camera_permission_required`.
 
 ---
 
@@ -194,8 +222,8 @@ The SDK bundles its own `amplifyconfiguration.json` (SourceID's Cognito identity
 Releases are consumed through JitPack, which builds from git tags:
 
 ```bash
-git tag v1.8.0
-git push origin v1.8.0        # or the appropriate remote
+git tag v1.9.0
+git push origin v1.9.0        # or the appropriate remote
 ```
 
 The maven coordinates come from the repository (`com.github.<owner>:<repo>:<tag>`); the `maven-publish` block in `liveness/build.gradle.kts` supplies the POM metadata. To verify a build locally:

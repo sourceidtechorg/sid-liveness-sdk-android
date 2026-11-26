@@ -30,7 +30,12 @@ import com.amplifyframework.ui.liveness.ui.FaceLivenessDetector
 import tech.sourceid.liveness.R
 import tech.sourceid.sdk.liveness.data.LivenessError
 import tech.sourceid.sdk.liveness.data.LivenessUIConfig
+import tech.sourceid.sdk.liveness.ui.theme.backgroundColor
 import tech.sourceid.sdk.liveness.ui.theme.buildColorScheme
+import tech.sourceid.sdk.liveness.ui.theme.buildTypography
+import tech.sourceid.sdk.liveness.ui.theme.primaryColor
+import tech.sourceid.sdk.liveness.ui.theme.textColor
+import androidx.compose.ui.res.stringResource
 
 /**
  * Maps the AWS detector failure to a [LivenessError] with a friendly user
@@ -122,10 +127,13 @@ fun FaceLivenessScreen(
         }
     }
 
-    var showInstructions by remember { mutableStateOf(true) }
+    var showInstructions by remember { mutableStateOf(config.showStartPage) }
 
     if (hasCameraPermission) {
-        MaterialTheme(colorScheme = buildColorScheme(config)) {
+        MaterialTheme(
+            colorScheme = buildColorScheme(config),
+            typography = buildTypography(config, MaterialTheme.typography)
+        ) {
             if (showInstructions) {
                 LivenessStartScreen(config = config) { showInstructions = false }
                 return@MaterialTheme
@@ -134,12 +142,7 @@ fun FaceLivenessScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
 
-                val isDarkMode = config.theme == "dark"
-                val brandColor = if (isDarkMode) {
-                    Color.White.copy(alpha = 0.6f)
-                } else {
-                    Color.Black.copy(alpha = 0.6f)
-                }
+                val isDarkMode = config.isDark
                 if (config.customTitle != null) {
                     Box(
                         modifier = Modifier
@@ -152,24 +155,40 @@ fun FaceLivenessScreen(
                         Text(
                             text = config.customTitle,
                             style = MaterialTheme.typography.titleLarge,
-                            color = brandColor
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = config.primaryColor
                         )
 
                     }
                 }
                 // Main detector takes most of the space
                 Box(modifier = Modifier.weight(1f)) {
-                    FaceLivenessDetector(
-                        sessionId = sessionId,
-                        region = region,
-                        // The SDK shows its own instruction page first.
-                        disableStartView = true,
-                        onComplete = { onComplete() },
-                        onError = { error ->
-                            Log.e(LivenessSDK.TAG, "Face liveness failed: ${error.message}", error.throwable)
-                            onError(error.toLivenessError())
-                        }
-                    )
+                    val handleError: (FaceLivenessDetectionException) -> Unit = { error ->
+                        Log.e(LivenessSDK.TAG, "Face liveness failed: ${error.message}", error.throwable)
+                        onError(error.toLivenessError())
+                    }
+                    // AWS's start view is never used: the SDK has its own start
+                    // page, or the host app provides one (showStartPage = false).
+                    if (config.hideCancelButton) {
+                        FaceLivenessDetector(
+                            sessionId = sessionId,
+                            region = region,
+                            disableStartView = true,
+                            onComplete = { onComplete() },
+                            onError = { handleError(it) },
+                            cancelButton = { }
+                        )
+                    } else {
+                        // AWS's default cancel button is internal, so it comes
+                        // from the overload without a cancelButton slot.
+                        FaceLivenessDetector(
+                            sessionId = sessionId,
+                            region = region,
+                            disableStartView = true,
+                            onComplete = { onComplete() },
+                            onError = { handleError(it) }
+                        )
+                    }
                 }
 
                 // Conditional branding footer
@@ -184,9 +203,9 @@ fun FaceLivenessScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
 
                             Text(
-                                text = "Powered by ",
+                                text = stringResource(R.string.sid_liveness_powered_by),
                                 style = MaterialTheme.typography.titleLarge,
-                                color = brandColor
+                                color = config.primaryColor.copy(alpha = 0.6f)
                             )
                             Image(
                                 modifier = Modifier.size(96.dp),
@@ -206,9 +225,19 @@ fun FaceLivenessScreen(
             }
         }
     } else {
-        Text(
-            text = "Camera permission required to continue",
-            style = MaterialTheme.typography.bodyLarge
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(config.backgroundColor)
+        ) {
+            Text(
+                text = stringResource(R.string.sid_liveness_camera_permission_required),
+                style = MaterialTheme.typography.bodyLarge,
+                color = config.textColor,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(24.dp)
+            )
+        }
     }
 }

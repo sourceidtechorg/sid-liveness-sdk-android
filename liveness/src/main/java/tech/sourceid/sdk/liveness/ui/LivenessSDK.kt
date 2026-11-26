@@ -93,10 +93,7 @@ object LivenessSDK {
         val intent = Intent(context, LivenessActivity::class.java).apply {
             putExtra("sessionId", sessionId)
             putExtra("region", region)
-            putExtra("customTitle", config.customTitle)
-            putExtra("theme", config.theme)
-            putExtra("primaryColorHex", config.primaryColorHex)
-            putExtra("hideBranding", config.hideBranding)
+            putExtra(LivenessActivity.EXTRA_CONFIG, config)
         }
 
         if (environment == null) {
