@@ -31,10 +31,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"  // Add this for Kotlin 1.9.24
-    }
-
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -63,16 +59,14 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-//                groupId = "com.github.sourceidtechorg"
-                groupId = "com.github.EQua-Dev"
-                artifactId = "liveness-expo"
-                version = "1.0.0"
+                groupId = "com.github.sourceidtechorg"
+                artifactId = "sid-liveness-sdk-android"
+                version = "1.9.0"
 
                 pom {
                     name.set("SIDLiveness")
                     description.set("A SourceID native Android library for performing liveness check for KYC.")
-//                    url.set("https://github.com/sourceidtechorg/sid-address-verification-android")
-                    url.set("https://github.com/EQua-Dev/liveness-expo")
+                    url.set("https://github.com/sourceidtechorg/sid-liveness-sdk-android")
 
                     licenses {
                         license {
@@ -92,8 +86,7 @@ afterEvaluate {
                     scm {
                         connection.set("scm:git:git://github.com/sourceidtechorg/sid-liveness-sdk-android.git")
                         developerConnection.set("scm:git:ssh://github.com/sourceidtechorg/sid-liveness-sdk-android.git")
-                        url.set("https://github.com/EQua-Dev/liveness-expo")
-//                        url.set("https://github.com/sourceidtechorg/sid-address-verification-android")
+                        url.set("https://github.com/sourceidtechorg/sid-liveness-sdk-android")
                     }
                 }
             }
@@ -103,6 +96,7 @@ afterEvaluate {
 
 
 dependencies {
+    // Support for Java 8 features
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     implementation(libs.androidx.core.ktx)
@@ -113,24 +107,15 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-//    implementation("com.amplifyframework:core:2.29.2")
-//    implementation("com.amplifyframework:aws-auth-cognito:2.29.2")
-//    implementation("com.amplifyframework:aws-api:2.29.2")
-// Liveness SDK: keep at 1.6.0, but ensure you include core 2.29.2 explicitly
-//    implementation("com.amplifyframework.ui:liveness:1.6.0")
+    // Icons.Filled.Person on the start page. Material 3 1.4+ no longer brings this in.
+    implementation("androidx.compose.material:material-icons-core")
 
-
-    // FaceLivenessDetector dependency
-    implementation("com.amplifyframework.ui:liveness:1.6.0")
+    // AWS Amplify Face Liveness UI. 1.13.0 requires Amplify 2.42.0 (aws-predictions);
+    // keep aws-auth-cognito on the same Amplify version.
+    implementation("com.amplifyframework.ui:liveness:1.13.0")
 
     // Amplify Auth dependency
-    implementation("com.amplifyframework:aws-auth-cognito:2.29.2")
-
-    // Material3 dependency for theming FaceLivenessDetector
-    implementation("androidx.compose.material3:material3:1.3.1")
-
-    // Support for Java 8 features
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("com.amplifyframework:aws-auth-cognito:2.42.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

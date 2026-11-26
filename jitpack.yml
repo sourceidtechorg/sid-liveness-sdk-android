@@ -1,0 +1,7 @@
+# Build only the library module. The :app tester consumes the published
+# artifact of the same version being built, so letting JitPack build the
+# whole project creates a circular dependency and fails the release.
+jdk:
+  - openjdk17
+install:
+  - ./gradlew :liveness:publishToMavenLocal

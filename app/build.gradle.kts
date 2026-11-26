@@ -67,10 +67,10 @@ dependencies {
 
 
     // FaceLivenessDetector dependency
-    implementation("com.amplifyframework.ui:liveness:1.6.0")
+//    implementation("com.amplifyframework.ui:liveness:1.6.0")
 
     // Amplify Auth dependency
-    implementation("com.amplifyframework:aws-auth-cognito:2.29.2")
+//    implementation("com.amplifyframework:aws-auth-cognito:2.29.2")
 
     // Material3 dependency for theming FaceLivenessDetector
     implementation("androidx.compose.material3:material3:1.3.1")
@@ -78,7 +78,9 @@ dependencies {
     // Support for Java 8 features
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    implementation(project(":liveness"))
+//    implementation(project(":liveness"))
+//    implementation("com.github.EQua-Dev:liveness-expo:v1.7.2")
+    implementation("com.github.sourceidtechorg:sid-liveness-sdk-android:v1.8.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

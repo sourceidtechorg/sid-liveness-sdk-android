@@ -11,26 +11,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.amplifyframework.core.Amplify
-import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
+import tech.sourceid.sdk.liveness.data.LivenessEnvironment
+//import com.amplifyframework.core.Amplify
+//import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
 import tech.sourceid.sdk.liveness.data.LivenessUIConfig
 import tech.sourceid.sdk.liveness.ui.LivenessLaunchParams
 import tech.sourceid.sdk.liveness.ui.LivenessResult
 import tech.sourceid.sdk.liveness.ui.LivenessSDK
 import tech.sourceid.sdktesters.ui.theme.SDKTestersTheme
 
+
 class MainActivity : ComponentActivity() {
+    val TAG = "MainActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Amplify Auth
-        try {
-            Amplify.addPlugin(AWSCognitoAuthPlugin())
-            Amplify.configure(applicationContext)
-            Log.i("MainActivity", "Amplify initialized successfully")
-        } catch (e: Exception) {
-            Log.e("MainActivity", "Could not initialize Amplify", e)
-        }
+//        // Initialize Amplify Auth
+//        try {
+//            Amplify.addPlugin(AWSCognitoAuthPlugin())
+//            Amplify.configure(applicationContext)
+//            Log.i("MainActivity", "Amplify initialized successfully")
+//        } catch (e: Exception) {
+//            Log.e("MainActivity", "Could not initialize Amplify", e)
+//        }
 
         enableEdgeToEdge()
         setContent {
@@ -54,18 +57,28 @@ class MainActivity : ComponentActivity() {
                         Button(onClick = {
                             LivenessSDK.launch(
                                 context = this@MainActivity,
-                                sessionId = "e63a2b7e-62b2-48f7-af14-ebe67d8ddfaa",
-                                region = "us-east-1",
+                                sessionId = "963a24e9-cf58-4840-881b-8399d03cc0f9",
+                                environment = LivenessEnvironment.SANDBOX,
+//                                region = "us-east-1",
                                 config = LivenessUIConfig(
                                     customTitle = "Verify Identity",
                                     theme = "dark",
                                     primaryColorHex = "#FF5733"
                                 ),
-                                onSuccess = { message ->
-                                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                                onSuccess = { message, sessionResult ->
+                                    // sessionResult is non-null when apiConfig was provided:
+                                    // status, confidence score, and reference image URL.
+                                    Log.i(TAG, "Liveness result: $sessionResult")
+                                    val display = sessionResult?.confidence
+                                        ?.let { "$message (confidence: ${"%.1f".format(it)}%)" }
+                                        ?: message
+                                    Toast.makeText(this@MainActivity, display, Toast.LENGTH_LONG).show()
                                 },
                                 onError = { error ->
-                                    Toast.makeText(this@MainActivity, "Error: $error", Toast.LENGTH_LONG).show()
+                                    // Full technical detail for debugging ("[CODE] debug message")
+                                    Log.e(TAG, "Liveness failed $error")
+                                    // Friendly text for the user
+                                    Toast.makeText(this@MainActivity, error.userMessage, Toast.LENGTH_LONG).show()
                                 }
                             )
 

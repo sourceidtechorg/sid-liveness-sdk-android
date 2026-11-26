@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SourceID's own text. Keys are shared with the iOS SDK (CONTRACT.md). A host
+  app replaces or translates any of them by declaring the same name in its own
+  res/values/strings.xml or res/values-ar/strings.xml.
+-->
+<resources>
+    <string name="sid_liveness_start_title">Liveness Check</string>
+    <string name="sid_liveness_start_intro">We need to verify you are a real person for security purposes.</string>
+    <string name="sid_liveness_start_guidelines_intro">Your face needs to be verified against your information. Please follow the guidelines below to ensure proper capture:</string>
+    <string name="sid_liveness_start_guideline_light">Use a well-lit space with even lighting, avoid very dark or overly bright areas.</string>
+    <string name="sid_liveness_start_guideline_center">Keep your head centered and follow prompts.</string>
+    <string name="sid_liveness_start_guideline_coverings">Remove any head coverings which may be obstructing your face.</string>
+    <string name="sid_liveness_start_guideline_photosensitivity">The check flashes a sequence of colours on screen. Take care if you are sensitive to flashing light.</string>
+    <string name="sid_liveness_start_guideline_retries">After 5 fails, apply a 30-60 minute timeout.</string>
+    <string name="sid_liveness_start_guideline_ready">When you\'re ready, tap Start.</string>
+    <string name="sid_liveness_start_button">Start Liveness Check</string>
+    <string name="sid_liveness_powered_by">Powered by </string>
+    <string name="sid_liveness_camera_permission_required">Camera permission required to continue</string>
+</resources>
