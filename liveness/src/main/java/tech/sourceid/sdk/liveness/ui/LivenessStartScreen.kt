@@ -3,6 +3,8 @@ package tech.sourceid.sdk.liveness.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -104,12 +106,16 @@ internal fun LivenessStartScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
             GUIDELINES.forEach { line ->
-                Text(
-                    text = "- ${stringResource(line)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textColor,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
+                // A separate bullet keeps it at the leading edge in right-to-left languages.
+                Row(modifier = Modifier.padding(vertical = 4.dp)) {
+                    Text(text = "•", style = MaterialTheme.typography.bodySmall, color = textColor)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(line),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = textColor
+                    )
+                }
             }
         }
 
